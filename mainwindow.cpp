@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
                                      ? Qt::CheckState::Checked
                                      : Qt::CheckState::Unchecked);
 
+  ui->opacitySpinBox->setValue(ui->compass->opacity()*100);
+
   mColorDialog.setModal(false);
 }
 
@@ -149,5 +151,11 @@ void MainWindow::on_indicatorColor_clicked()
                     });
 
     mColorDialog.show();
+}
+
+
+void MainWindow::on_opacitySpinBox_valueChanged(int arg1)
+{
+    ui->compass->setOpacity((float)(arg1)/100.0f);
 }
 

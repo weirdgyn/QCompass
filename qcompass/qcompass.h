@@ -106,6 +106,10 @@ public:
   QColor borderColor() const;
   void setBorderColor(const QColor &borderColor);
 
+  Q_PROPERTY(float opacity READ opacity WRITE setOpacity NOTIFY opacityChanged)
+  float opacity() const;
+  void setOpacity(float opacity);
+
 protected:
   /**
    * @brief override of base class resizeEvent
@@ -142,6 +146,7 @@ signals:
   void rangeChanged();
   void borderWidthChanged();
   void borderColorChanged();
+  void opacityChanged();
 
 private:
   // PROPERTIES
@@ -159,6 +164,11 @@ private:
   float mBearing;
   float mRange;
   /**
+   * @brief Opacity [property].
+   * @see opacity, setOpacity
+   */
+  float mOpacity;
+  /**
    * @brief Widget internal frame
    *
    * The widget frame is evaluated as the largest square area inside designed
@@ -166,6 +176,11 @@ private:
    *
    */
   QRectF mFrame;
+  /**
+   * @brief Opacity effect.
+   *
+   */
+  QGraphicsOpacityEffect mOpacityEffect;
 
   /**
    * @brief Evaluate internal widget frame.
@@ -185,6 +200,7 @@ private:
   void drawBackground(QPainter &painter);
 
   void drawBearing(QPainter &painter, float pixDeg, int unitHeight);
+
 };
 
 #endif // QCOMPASS_H

@@ -41,6 +41,8 @@ private slots:
 
     void on_indicatorColor_clicked();
 
+    void on_opacitySpinBox_valueChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
     QColorDialog mColorDialog;

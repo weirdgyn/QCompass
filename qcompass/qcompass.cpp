@@ -5,7 +5,12 @@ QCompass::QCompass(QWidget *parent)
       mTextColor(Qt::lightGray), mHeadingColor(Qt::red),
       mBearingColor(Qt::cyan), mIndicatorColor(Qt::yellow),
       mBorderColor(Qt::black), mShowHeading(true), mShowBearing(false),
-      mBorderWidth(1), mHeading(0), mBearing(0), mRange(DEF_RANGE) {}
+      mBorderWidth(1), mHeading(0), mBearing(0), mRange(DEF_RANGE), mOpacity(1),
+      mOpacityEffect(new QGraphicsOpacityEffect(this)) {
+  mOpacityEffect.setOpacity((float)(mOpacity));
+  setAutoFillBackground(true);
+  setGraphicsEffect(&mOpacityEffect);
+}
 
 QColor QCompass::backgroundColor() const { return mBackgroundColor; }
 
@@ -313,6 +318,24 @@ void QCompass::paintEvent(QPaintEvent *event) {
     drawBearing(_painter, _pixDeg, _unitHeight);
 }
 
+float QCompass::opacity() const { return mOpacity; }
+
+void QCompass::setOpacity(float opacity) {
+  if (qFuzzyCompare(mOpacity, opacity))
+    return;
+
+  mOpacity = opacity;
+
+  if (opacity > 1 || opacity < 0)
+    return;
+
+  mOpacity = opacity;
+  mOpacityEffect.setOpacity(opacity);
+
+  repaint();
+  emit opacityChanged();
+}
+
 void QCompass::drawBackground(QPainter &painter) {
   QPen _pen(mBorderColor);
   QBrush _brush(mBackgroundColor);
@@ -343,8 +366,7 @@ void QCompass::drawBearing(QPainter &painter, float pixDeg, int unitHeight) {
       _y = mFrame.center().y();
       _indicator_w = -mFrame.height() * INDICATOR_WIDTH_RATIO;
     }
-  }
-  else if (_delta < 180) {
+  } else if (_delta < 180) {
     if ((_delta >= 0) && (_delta < (mRange / 2)))
       _x = mFrame.left() + pixDeg * (_delta + (mRange / 2));
     else {

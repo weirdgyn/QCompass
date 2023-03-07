@@ -2,8 +2,8 @@ CONFIG      += plugin debug_and_release
 TARGET      = $$qtLibraryTarget(qlockbuttonplugin)
 TEMPLATE    = lib
 
-HEADERS     = qcompass.h
-SOURCES     = qcompass.cpp
+HEADERS     = qcompassplugin.h
+SOURCES     = qcompassplugin.cpp
 RESOURCES   = icons.qrc
 LIBS        += -L.
 

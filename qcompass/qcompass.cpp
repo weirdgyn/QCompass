@@ -204,17 +204,16 @@ void QCompass::resize() {
 }
 
 QRectF QCompass::getFrame() {
-  QSizeF _widgetSize =
-      QSizeF(this->width() - (mBorderWidth), this->height() - (mBorderWidth));
+  QSizeF _size(this->width() - (mBorderWidth), this->height() - (mBorderWidth));
 
   QRectF _frame = QRectF();
-  _frame.setSize(_widgetSize);
+  _frame.setSize(_size);
 
-  float _xOffset = (this->width() - _widgetSize.width()) / 2;
-  float _yOffset = (this->height() - _widgetSize.height()) / 2;
+  float _xOffset = (this->width() - _size.width()) / 2;
+  float _yOffset = (this->height() - _size.height()) / 2;
 
-  QPointF _offsetPoint(_xOffset, _yOffset);
-  _frame.moveTopLeft(_offsetPoint);
+  QPointF _offset(_xOffset, _yOffset);
+  _frame.moveTopLeft(_offset);
 
   return _frame;
 }

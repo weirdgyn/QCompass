@@ -1,0 +1,38 @@
+name: compile-qt5.9.5-plugin
+run-name: ${{ github.actor }} Build and Release Compass plugin (Linux + Qt 5.9.5)
+on:
+  push:
+    paths:
+      - 'qcompass/qcompass.*'
+      - '.github/workflows/compile-qt5.9.5-plugin.*'
+jobs:
+  build-and-release:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+            version: '5.9.5'
+            host: 'linux'
+            target: 'desktop'
+            dir: '${{ github.workspace }}/'
+      - name: Build #1
+        run: qmake Compass.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
+      - name: Build #2
+        run: make -f Makefile qmake_all
+      - name: Build #3
+        run: make -j8
+      - name: Archive plugin
+        uses: actions/upload-artifact@v3
+        with:
+          name: qt5-plugin
+          path: |
+              libvcompassplugin.so
+              README.md
+              LICENSE.md
+              Changelog.md
+              docs/latex/refman.pdf              
+              qcompass/qcompass.h
+              qcompass/qcompass.cpp
+              qcompass/qcompass.pri

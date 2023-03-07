@@ -28,7 +28,7 @@ jobs:
         with:
           name: qt5-plugin
           path: |
-              libvcompassplugin.so
+              libcompassplugin.so
               README.md
               LICENSE.md
               Changelog.md

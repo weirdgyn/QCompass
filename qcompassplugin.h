@@ -1,14 +1,14 @@
-#ifndef COMPASSPLUGIN_H
-#define COMPASSPLUGIN_H
+#ifndef QCOMPASSPLUGIN_H
+#define QCOMPASSPLUGIN_H
 
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
-class CompassPlugin : public QObject, public QDesignerCustomWidgetInterface {
+class QCompassPlugin : public QObject, public QDesignerCustomWidgetInterface {
   Q_OBJECT
   Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface")
   Q_INTERFACES(QDesignerCustomWidgetInterface)
 public:
-  explicit CompassPlugin(QObject *parent = nullptr);
+  explicit QCompassPlugin(QObject *parent = nullptr);
 
   bool isContainer() const override;
   bool isInitialized() const override;
@@ -26,4 +26,4 @@ private:
   bool initialized = false;
 };
 
-#endif // COMPASSPLUGIN_H
+#endif // QCOMPASSPLUGIN_H

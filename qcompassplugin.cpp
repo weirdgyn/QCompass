@@ -1,36 +1,36 @@
-#include "compassplugin.h"
+#include "qcompassplugin.h"
 #include "qcompass/qcompass.h"
 
-CompassPlugin::CompassPlugin(QObject *parent) : QObject(parent) {}
+QCompassPlugin::QCompassPlugin(QObject *parent) : QObject(parent) {}
 
-void CompassPlugin::initialize(QDesignerFormEditorInterface * /* core */) {
+void QCompassPlugin::initialize(QDesignerFormEditorInterface * /* core */) {
   if (initialized)
     return;
 
   initialized = true;
 }
 
-bool CompassPlugin::isInitialized() const { return initialized; }
+bool QCompassPlugin::isInitialized() const { return initialized; }
 
-QWidget *CompassPlugin::createWidget(QWidget *parent) {
+QWidget *QCompassPlugin::createWidget(QWidget *parent) {
   return new QCompass(parent);
 }
 
-QString CompassPlugin::name() const { return QStringLiteral("QCompass"); }
+QString QCompassPlugin::name() const { return QStringLiteral("QCompass"); }
 
-QString CompassPlugin::group() const {
+QString QCompassPlugin::group() const {
   return QStringLiteral("Custom widgets");
 }
 
-QIcon CompassPlugin::icon() const { return QIcon(QLatin1String(":/images/compass.ico")); }
+QIcon QCompassPlugin::icon() const { return QIcon(QLatin1String(":/images/compass.ico")); }
 
-QString CompassPlugin::toolTip() const { return QString(); }
+QString QCompassPlugin::toolTip() const { return QString(); }
 
-QString CompassPlugin::whatsThis() const { return QString(); }
+QString QCompassPlugin::whatsThis() const { return QString(); }
 
-bool CompassPlugin::isContainer() const { return false; }
+bool QCompassPlugin::isContainer() const { return false; }
 
-QString CompassPlugin::domXml() const {
+QString QCompassPlugin::domXml() const {
   return "<ui language=\"c++\" displayname=\"Compass\">\n"
          " <widget class=\"QCompass\" name=\"compass\">\n"
          "  <property name=\"geometry\">\n"
@@ -51,6 +51,9 @@ QString CompassPlugin::domXml() const {
          "</ui>\n";
 }
 
-QString CompassPlugin::includeFile() const {
+QString QCompassPlugin::includeFile() const {
   return QStringLiteral("qcompass/qcompass.h");
 }
+#if QT_VERSION < 0x050000
+Q_EXPORT_PLUGIN2(qcompassplugin, QCompassPlugin)
+#endif // QT_VERSION < 0x050000

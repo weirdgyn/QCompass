@@ -1,15 +1,25 @@
 #include "qcompass.h"
 
 QCompass::QCompass(QWidget *parent)
-    : QWidget{parent}, mBackgroundColor(Qt::black), mLineColor(Qt::lightGray),
-      mTextColor(Qt::lightGray), mHeadingColor(Qt::red),
-      mBearingColor(Qt::cyan), mIndicatorColor(Qt::yellow),
-      mBorderColor(Qt::black), mShowHeading(true), mShowBearing(false),
-      mBorderWidth(1), mHeading(0), mBearing(0), mRange(DEF_RANGE), mOpacity(1),
-      mOpacityEffect(new QGraphicsOpacityEffect(this)) {
-  mOpacityEffect.setOpacity((float)(mOpacity));
-  setAutoFillBackground(true);
-  setGraphicsEffect(&mOpacityEffect);
+    : QWidget{parent}
+    , mBackgroundColor(Qt::black)
+    , mLineColor(Qt::lightGray)
+    , mTextColor(Qt::lightGray)
+    , mHeadingColor(Qt::red)
+    , mBearingColor(Qt::cyan)
+    , mIndicatorColor(Qt::yellow)
+    , mBorderColor(Qt::black)
+    , mShowHeading(true)
+    , mShowBearing(false)
+    , mBorderWidth(1)
+    , mHeading(0)
+    , mBearing(0)
+    , mRange(DEF_RANGE)
+    , mOpacity(1)
+    /*, mOpacityEffect(new QGraphicsOpacityEffect(this))*/ {
+//  mOpacityEffect.setOpacity((float)(mOpacity));
+//  setAutoFillBackground(true);
+//  setGraphicsEffect(&mOpacityEffect);
 }
 
 QColor QCompass::backgroundColor() const { return mBackgroundColor; }
@@ -187,7 +197,11 @@ void QCompass::resizeEvent(QResizeEvent *event) {
   resize();
 }
 
-void QCompass::resize() { mFrame = getFrame(); }
+void QCompass::resize() {
+  mFrame = getFrame();
+
+  mFont.setPixelSize((float)(mFrame.height()) * DEF_FONT_RATIO);
+}
 
 QRectF QCompass::getFrame() {
   QSizeF _widgetSize =
@@ -205,12 +219,6 @@ QRectF QCompass::getFrame() {
   return _frame;
 }
 
-//  TODO:
-//      define *_LINE_HEIGHT as a ratio on widget height.
-//      define *_LINE_THICKNESS as a ratio on widget width.
-//      define MARKER_HEIGHT as a ratio on widget height.
-//      define MARKER_WIDTH as a ratio on MARKER_HEIGHT.
-//      define INDICATOR_WIDTH as a ratio on widget width.
 void QCompass::paintEvent(QPaintEvent *event) {
   Q_UNUSED(event);
 
@@ -220,18 +228,13 @@ void QCompass::paintEvent(QPaintEvent *event) {
 
   drawBackground(_painter);
 
-  QFont _font = QFont();
+  _painter.setFont(mFont);
 
-  _font.setPixelSize(mFrame.height() / DEF_FONT_RATIO);
-  _painter.setFont(_font);
+  QFontMetricsF _metrics(mFont);
 
-  QFontMetricsF _metrics(_font);
-
-  int _unitHeight = _metrics.height() / UNIT_HEIGHT_RATIO;
-
-  float _pixDeg = mFrame.width() / mRange;
-  int _minDeg = qRound(mHeading - (mRange / 2.0f));
-  int _maxDeg = qRound(mHeading + (mRange / 2.0f));
+  const float _pixDeg = mFrame.width() / mRange;
+  const int _minDeg = qRound(mHeading - (mRange / 2.0f));
+  const int _maxDeg = qRound(mHeading + (mRange / 2.0f));
 
   for (int _i = -180; _i < 540; _i += ANGLE_STEPPING) {
     QPen _pen;
@@ -247,24 +250,22 @@ void QCompass::paintEvent(QPaintEvent *event) {
 
       _x1 = _x2 = mFrame.left() + _pixDeg * (_i - _minDeg);
       _y1 = mFrame.top();
-      _y2 = (TERTIARY_LINE_HEIGHT * _unitHeight) + mFrame.top();
+      _y2 = (L3_HEIGHT_RATIO * mFrame.height()) + mFrame.top();
 
-      _pen.setWidth(TERTIARY_LINE_THICKNESS);
+      _pen.setWidth(L3_THICKNESS);
 
       if (_i % 45 == 0) {
         // Draw a thicker line on NE/NW/SE/SW
+        _pen.setWidth(L2_THICKNESS);
 
-        _pen.setWidth(SECONDARY_LINE_THICKNESS);
-
-        _y2 = (SECONDARY_LINE_HEIGHT * _unitHeight) + mFrame.top();
+        _y2 = (L2_HEIGHT_RATIO * mFrame.height()) + mFrame.top();
       }
 
       if (_i % 90 == 0) {
         // Draw an even thicker line on cardinal directions + label
+        _pen.setWidth(L1_THICKNESS);
 
-        _pen.setWidth(MAIN_LINE_THICKNESS);
-
-        _y2 = (MAIN_LINE_HEIGHT * _unitHeight) + mFrame.top();
+        _y2 = (L1_HEIGHT_RATIO * mFrame.height()) + mFrame.top();
 
         switch (_i) {
         case -90:
@@ -310,12 +311,15 @@ void QCompass::paintEvent(QPaintEvent *event) {
   }
 
   if (mShowHeading)
-    drawMarker(_painter, mFrame.center().x(), mFrame.top(),
-               (MARKER_HEIGHT_FACTOR * _unitHeight),
-               mFrame.width() * MARKER_WIDTH_RATIO, mHeadingColor);
+    drawMarker(_painter,
+               mFrame.center().x(),
+               mFrame.top(),
+               mFrame.height() * MARKER_HEIGHT_RATIO,
+               mFrame.width() * MARKER_WIDTH_RATIO,
+               mHeadingColor);
 
   if (mShowBearing)
-    drawBearing(_painter, _pixDeg, _unitHeight);
+    drawBearing(_painter, _pixDeg);
 }
 
 float QCompass::opacity() const { return mOpacity; }
@@ -329,8 +333,9 @@ void QCompass::setOpacity(float opacity) {
   if (opacity > 1 || opacity < 0)
     return;
 
-  mOpacity = opacity;
-  mOpacityEffect.setOpacity(opacity);
+  //mOpacityEffect.setOpacity(opacity);
+
+  this->setWindowOpacity(mOpacity);
 
   repaint();
   emit opacityChanged();
@@ -346,7 +351,7 @@ void QCompass::drawBackground(QPainter &painter) {
   painter.drawRect(mFrame);
 }
 
-void QCompass::drawBearing(QPainter &painter, float pixDeg, int unitHeight) {
+void QCompass::drawBearing(QPainter &painter, float pixDeg) {
   float _x = 0;
   float _y = mFrame.bottom();
   float _delta = (mBearing - mHeading);
@@ -378,8 +383,12 @@ void QCompass::drawBearing(QPainter &painter, float pixDeg, int unitHeight) {
   }
 
   if (_draw_marker)
-    drawMarker(painter, _x, _y, -(MARKER_HEIGHT_FACTOR * unitHeight),
-               mFrame.width() * MARKER_WIDTH_RATIO, mBearingColor);
+    drawMarker(painter,
+               _x,
+               _y,
+               -(mFrame.height() * MARKER_HEIGHT_RATIO),
+               mFrame.width() * MARKER_WIDTH_RATIO,
+               mBearingColor);
   else
     drawIndicator(painter, _x, _y, _indicator_h, _indicator_w, mIndicatorColor);
 }

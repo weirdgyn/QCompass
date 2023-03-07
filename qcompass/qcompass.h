@@ -1,7 +1,7 @@
 #ifndef QCOMPASS_H
 #define QCOMPASS_H
 
-#include <QGraphicsOpacityEffect>
+//#include <QGraphicsOpacityEffect>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
@@ -18,31 +18,31 @@ class QDESIGNER_WIDGET_EXPORT QCompass : public QWidget {
 public:
   explicit QCompass(QWidget *parent = nullptr);
 
-  constexpr static const float DEF_RANGE = 180.0f;
   constexpr static const float DEF_BEARING = 0.0f;
   constexpr static const float DEF_HEADING = 0.0f;
 
-  constexpr static const float MARKER_HEIGHT_FACTOR = 3.0f;
+  constexpr static const float DEF_RANGE = 180.0f;
+
+  constexpr static const float DEF_FONT_RATIO = 0.25f;
+
+  constexpr static const int ANGLE_STEPPING = 5;
+
+  constexpr static const int MAX_RANGE = 360;
+  constexpr static const int MIN_RANGE = 30;
+
+  constexpr static const float MARKER_HEIGHT_RATIO = 0.33f;
   constexpr static const float MARKER_WIDTH_RATIO = 0.06f;
 
   constexpr static const float INDICATOR_HEIGHT_RATIO = 0.75f;
   constexpr static const float INDICATOR_WIDTH_RATIO = 0.3f;
 
-  constexpr static const int DEF_FONT_RATIO = 4;
-  constexpr static const int ANGLE_STEPPING = 5;
-  constexpr static const int UNIT_HEIGHT_RATIO = 4;
-  constexpr static const int TEXT_OFFSET = 10;
-  constexpr static const int MAX_RANGE = 360;
-  constexpr static const int MIN_RANGE = 30;
-  constexpr static const int MEASURE_WIDTH_FACTOR = 50;
-  constexpr static const int MEASURE_HEIGHT_FACTOR = 30;
-  constexpr static const int TERTIARY_LINE_HEIGHT = 10;
-  constexpr static const int SECONDARY_LINE_HEIGHT = 8;
-  constexpr static const int MAIN_LINE_HEIGHT = 6;
+  constexpr static const float L3_HEIGHT_RATIO = 0.33f;
+  constexpr static const float L2_HEIGHT_RATIO = 0.25f;
+  constexpr static const float L1_HEIGHT_RATIO = 0.18f;
 
-  constexpr static const float TERTIARY_LINE_THICKNESS = 1.0f;
-  constexpr static const float SECONDARY_LINE_THICKNESS = 2.0f;
-  constexpr static const float MAIN_LINE_THICKNESS = 3.0f;
+  constexpr static const float L3_THICKNESS = 1.0f;
+  constexpr static const float L2_THICKNESS = 2.0f;
+  constexpr static const float L1_THICKNESS = 3.0f;
 
   Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE
                  setBackgroundColor NOTIFY backgroundColorChanged)
@@ -180,7 +180,7 @@ private:
    * @brief Opacity effect.
    *
    */
-  QGraphicsOpacityEffect mOpacityEffect;
+//  QGraphicsOpacityEffect mOpacityEffect;
 
   /**
    * @brief Evaluate internal widget frame.
@@ -188,6 +188,11 @@ private:
    * @return QRectF
    */
   QRectF getFrame();
+
+  /**
+   * @brief mFont
+   */
+  QFont mFont;
 
   void resize();
 
@@ -199,8 +204,7 @@ private:
 
   void drawBackground(QPainter &painter);
 
-  void drawBearing(QPainter &painter, float pixDeg, int unitHeight);
-
+  void drawBearing(QPainter &painter, float pixDeg);
 };
 
 #endif // QCOMPASS_H

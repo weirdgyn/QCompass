@@ -27,4 +27,4 @@ SOURCES     = compassplugin.cpp \
 RESOURCES += \
     icons.qrc
 
-include (compass/compass.pri)
+include (qcompass/qcompass.pri)
